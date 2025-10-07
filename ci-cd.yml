@@ -1,0 +1,126 @@
+trigger:
+  - main
+pr:
+  - main
+
+variables:
+  buildConfiguration: "Release"
+  dockerfilePath: "$(Build.SourcesDirectory)/Dockerfile"
+  tag: "$(Build.BuildId)"
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    displayName: "Construir a aplicação"
+    jobs:
+      - job: Build
+        steps:
+          - task: UseDotNet@2
+            displayName: "Instalar .NET 8 SDK"
+            inputs:
+              version: "8.x"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restaurar pacotes NuGet"
+            inputs:
+              command: "restore"
+              projects: "**/*.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Compilar aplicação - $(buildConfiguration)"
+            inputs:
+              command: "build"
+              projects: "**/*.csproj"
+              arguments: "--no-restore --configuration $(buildConfiguration)"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Executar testes unitários"
+            inputs:
+              command: "test"
+              projects: "**/TechChallengeUsers.Application.Tests.csproj"
+              arguments: '--configuration $(buildConfiguration) --no-build --collect "Code Coverage"'
+              publishTestResults: true
+
+          - publish: "$(Build.ArtifactStagingDirectory)"
+            artifact: "drop"
+
+  - stage: Docker
+    displayName: "Construir e publicar imagem Docker"
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: Construir e publicar imagem Docker
+        steps:
+          - task: Docker@2
+            displayName: "Construir imagem Docker"
+            condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+            inputs:
+              containerRegistry: "$(dockerRegistryServiceConnection)"
+              repository: "$(acrName)"
+              command: "build"
+              Dockerfile: "$(dockerfilePath)"
+              tags: "$(tag)"
+
+          - task: Docker@2
+            displayName: Login no ACR
+            inputs:
+              containerRegistry: "$(dockerRegistryServiceConnection)"
+              command: "login"
+
+          - task: Docker@2
+            displayName: "Publicar imagem Docker"
+            condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+            inputs:
+              containerRegistry: "$(dockerRegistryServiceConnection)"
+              repository: "$(acrName)"
+              command: "push"
+              tags: $(tag)
+
+  - stage: Deploy
+    displayName: "Implantar aplicação"
+    dependsOn: Docker
+    condition: succeeded()
+    jobs:
+      - deployment: Deploy
+        displayName: "Implantar em ambiente de produção"
+        environment: "Production"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  inputs:
+                    azureSubscription: "Assinatura para estudantes(07de936b-e0c8-47b8-b15f-3d778712ecb6)"
+                    location: "$(location)"
+                    imageToDeploy: "$(acrLoginServer)/$(acrName):$(tag)"
+                    containerAppName: "$(appName)"
+                    resourceGroup: "$(resourceGroup)"
+                    targetPort: "8080"
+                    containerAppEnvironment: |
+                      ConnectionStrings__TechDb="$(connectionString)"
+                      Jwt__Issuer="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
+                      Jwt__Audience="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
+                  displayName: "Construir e Rodar o Contêiner Docker com a Aplicação .NET"
+
+  - stage: Infraestructure
+    displayName: "Implantar Infraestrutura New Relic"
+    dependsOn: Deploy
+    condition: succeeded()
+    jobs:
+      - job: Implantar Infraestrutura New Relic
+        steps:
+          - script: |
+              docker run \
+              --detach \
+              --name newrelic-infra \
+              --network=host \
+              --cap-add=SYS_PTRACE \
+              --privileged \
+              --pid=host \
+              --volume "/:/host:ro" \
+              --volume "/var/run/docker.sock:/var/run/docker.sock" \
+              --volume "newrelic-infra:/etc/newrelic-infra" \
+              --env NRIA_LICENSE_KEY='$(nrKey)' \
+              newrelic/infrastructure:latest

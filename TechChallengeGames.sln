@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Api", "1 - Api", "{9BF43944-87BA-441A-AA99-3C6D6B072A7E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Domain", "2 - Domain", "{5486B120-DDD2-4C05-AC04-4730EE1BA7EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Application", "3 - Application", "{D24061EE-0D90-460C-96E0-E0E49D4FCB3A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Infrastructure", "4 - Infrastructure", "{7EFEAF83-988D-4067-BF7D-5C2D5EA99A7C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.1 - Data", "4.1 - Data", "{F1C9CAB0-458E-4B71-AEC0-7C733F9559A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.2 - Security", "4.2 - Security", "{540D8950-F446-44C2-A1C1-F3DD1DE79A51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Test", "5 - Test", "{ABDDE843-B3B2-43D5-B07E-D38D0E86F208}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechChallengeGames.Api", "src\TechChallengeGames.Api\TechChallengeGames.Api.csproj", "{31CBDF9A-2731-47BD-A8D7-3972EB9DFE10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechChallengeGames.Domain", "src\TechChallengeGames.Domain\TechChallengeGames.Domain.csproj", "{6FA728A7-F0E7-42EE-96F5-D9B1052AD21D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechChallengeGames.Application", "src\TechChallengeGames.Application\TechChallengeGames.Application.csproj", "{BCFD701C-D1D8-401D-A69A-D10E2705F97C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechChallengeGames.Data", "src\TechChallengeGames.Data\TechChallengeGames.Data.csproj", "{B210ABD0-9601-44ED-94A3-D7C0F273EA0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechChallengeGames.Security", "src\TechChallengeGames.Security\TechChallengeGames.Security.csproj", "{172FC3CB-3B67-4B92-A2E4-EC963F5CD52F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechChallengeGames.Application.Test", "tests\TechChallengeGames.Application.Test\TechChallengeGames.Application.Test.csproj", "{AAA0EEB3-4B19-4B28-B684-82D00828B7E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F1C9CAB0-458E-4B71-AEC0-7C733F9559A5} = {7EFEAF83-988D-4067-BF7D-5C2D5EA99A7C}
+		{540D8950-F446-44C2-A1C1-F3DD1DE79A51} = {7EFEAF83-988D-4067-BF7D-5C2D5EA99A7C}
+		{31CBDF9A-2731-47BD-A8D7-3972EB9DFE10} = {9BF43944-87BA-441A-AA99-3C6D6B072A7E}
+		{6FA728A7-F0E7-42EE-96F5-D9B1052AD21D} = {5486B120-DDD2-4C05-AC04-4730EE1BA7EE}
+		{BCFD701C-D1D8-401D-A69A-D10E2705F97C} = {D24061EE-0D90-460C-96E0-E0E49D4FCB3A}
+		{B210ABD0-9601-44ED-94A3-D7C0F273EA0E} = {F1C9CAB0-458E-4B71-AEC0-7C733F9559A5}
+		{172FC3CB-3B67-4B92-A2E4-EC963F5CD52F} = {540D8950-F446-44C2-A1C1-F3DD1DE79A51}
+		{AAA0EEB3-4B19-4B28-B684-82D00828B7E2} = {ABDDE843-B3B2-43D5-B07E-D38D0E86F208}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31CBDF9A-2731-47BD-A8D7-3972EB9DFE10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31CBDF9A-2731-47BD-A8D7-3972EB9DFE10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31CBDF9A-2731-47BD-A8D7-3972EB9DFE10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31CBDF9A-2731-47BD-A8D7-3972EB9DFE10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FA728A7-F0E7-42EE-96F5-D9B1052AD21D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FA728A7-F0E7-42EE-96F5-D9B1052AD21D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FA728A7-F0E7-42EE-96F5-D9B1052AD21D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FA728A7-F0E7-42EE-96F5-D9B1052AD21D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCFD701C-D1D8-401D-A69A-D10E2705F97C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCFD701C-D1D8-401D-A69A-D10E2705F97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCFD701C-D1D8-401D-A69A-D10E2705F97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCFD701C-D1D8-401D-A69A-D10E2705F97C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B210ABD0-9601-44ED-94A3-D7C0F273EA0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B210ABD0-9601-44ED-94A3-D7C0F273EA0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B210ABD0-9601-44ED-94A3-D7C0F273EA0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B210ABD0-9601-44ED-94A3-D7C0F273EA0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{172FC3CB-3B67-4B92-A2E4-EC963F5CD52F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{172FC3CB-3B67-4B92-A2E4-EC963F5CD52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{172FC3CB-3B67-4B92-A2E4-EC963F5CD52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{172FC3CB-3B67-4B92-A2E4-EC963F5CD52F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAA0EEB3-4B19-4B28-B684-82D00828B7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAA0EEB3-4B19-4B28-B684-82D00828B7E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAA0EEB3-4B19-4B28-B684-82D00828B7E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAA0EEB3-4B19-4B28-B684-82D00828B7E2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
