@@ -39,7 +39,7 @@ stages:
             displayName: "Executar testes unitários"
             inputs:
               command: "test"
-              projects: "**/TechChallengeUsers.Application.Tests.csproj"
+              projects: "**/TechChallengeGames.Application.Tests.csproj"
               arguments: '--configuration $(buildConfiguration) --no-build --collect "Code Coverage"'
               publishTestResults: true
 
@@ -102,6 +102,13 @@ stages:
                       ConnectionStrings__TechDb="$(connectionString)"
                       Jwt__Issuer="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
                       Jwt__Audience="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
+                      Jwt__Key="$(jwtKey)"
+                      Microservices__GameUrl="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
+                      Microservices__UserUrl="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
+                      Credentials__Email="$(adminEmail)"
+                      Credentials__Password="$(adminPassword)"
+                      ElasticSettings__ApiKey="$(elasticApiKey)"
+                      ElasticSettings__CloudId="$(elasticCloudId)"
                   displayName: "Construir e Rodar o Contêiner Docker com a Aplicação .NET"
 
   - stage: Infraestructure

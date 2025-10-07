@@ -2,15 +2,15 @@
 WORKDIR /src
 
 # Copiar o arquivo da solução
-COPY TechChallengeUsers.sln ./
+COPY TechChallengeGames.sln ./
 
 # Copy project files
-COPY src/TechChallengeUsers.Api/TechChallengeUsers.Api.csproj src/TechChallengeUsers.Api/
-COPY src/TechChallengeUsers.Application/TechChallengeUsers.Application.csproj src/TechChallengeUsers.Application/
-COPY src/TechChallengeUsers.Data/TechChallengeUsers.Data.csproj src/TechChallengeUsers.Data/
-COPY src/TechChallengeUsers.Domain/TechChallengeUsers.Domain.csproj src/TechChallengeUsers.Domain/
-COPY src/TechChallengeUsers.Security/TechChallengeUsers.Security.csproj src/TechChallengeUsers.Security/
-COPY tests/TechChallengeUsers.Application.Test/TechChallengeUsers.Application.Test.csproj tests/TechChallengeUsers.Application.Test/
+COPY src/TechChallengeGames.Api/TechChallengeGames.Api.csproj src/TechChallengeGames.Api/
+COPY src/TechChallengeGames.Application/TechChallengeGames.Application.csproj src/TechChallengeGames.Application/
+COPY src/TechChallengeGames.Data/TechChallengeGames.Data.csproj src/TechChallengeGames.Data/
+COPY src/TechChallengeGames.Domain/TechChallengeGames.Domain.csproj src/TechChallengeGames.Domain/
+COPY src/TechChallengeGames.Security/TechChallengeGames.Security.csproj src/TechChallengeGames.Security/
+COPY tests/TechChallengeGames.Application.Test/TechChallengeGames.Application.Test.csproj tests/TechChallengeGames.Application.Test/
 
 # Realizar o restore
 RUN dotnet restore
@@ -23,10 +23,13 @@ COPY tests/ tests/
 RUN dotnet build -c Release --no-restore
 
 # Publicar o projeto
-RUN dotnet publish src/TechChallengeUsers.Api/TechChallengeUsers.Api.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish src/TechChallengeGames.Api/TechChallengeGames.Api.csproj -c Release -o /app/publish --no-restore
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+
+# Declare the build argument
+ARG NEW_RELIC_LICENSE_KEY
 
 # Install the agent
 RUN apt-get update && apt-get install -y wget ca-certificates gnupg \
@@ -42,8 +45,8 @@ ENV CORECLR_ENABLE_PROFILING=1 \
 CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
 CORECLR_NEWRELIC_HOME=/usr/local/newrelic-dotnet-agent \
 CORECLR_PROFILER_PATH=/usr/local/newrelic-dotnet-agent/libNewRelicProfiler.so \
-NEW_RELIC_LICENSE_KEY=e20ffdce07272085d33407e1b5408156FFFFNRAL \
-NEW_RELIC_APP_NAME="techchallenge-users-newrelic"
+NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY} \
+NEW_RELIC_APP_NAME="techchallenge-games-newrelic"
 
 WORKDIR /app
 
@@ -60,4 +63,4 @@ USER appuser
 # Expor a porta
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "TechChallengeUsers.Api.dll"]
+ENTRYPOINT ["dotnet", "TechChallengeGames.Api.dll"]

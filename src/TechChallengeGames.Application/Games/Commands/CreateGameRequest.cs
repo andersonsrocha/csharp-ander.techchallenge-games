@@ -10,9 +10,10 @@ public class CreateGameRequest
     public string ImageUrl { get; init; } = string.Empty;
     public Category Category { get; init; }
     public DateTime ReleaseDate { get; init; } = DateTime.Now;
+    public double Price { get; init; }
 
     public static implicit operator Game(CreateGameRequest request)
     {
-        return new Game(request.Name, request.Description, request.ImageUrl, request.Category, request.ReleaseDate);
+        return new Game(request.Name, request.Description, request.ImageUrl, request.Category, request.ReleaseDate, request.Price);
     }
 }

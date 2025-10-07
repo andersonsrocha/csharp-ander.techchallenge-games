@@ -10,4 +10,5 @@ public class UpdateGameRequest
     public string ImageUrl { get; init; } = string.Empty;
     public Category Category { get; init; }
     public DateTime ReleaseDate { get; init; } = DateTime.Now;
+    public double Price { get; init; }
 }

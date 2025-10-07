@@ -20,6 +20,24 @@ public class GamesController(IGameService service, ILogger<GamesController> logg
     
     [HttpGet]
     [Authorize("User")]
+    [Route("[action]/{id:Guid}")]
+    [ProducesResponseType(typeof(GameDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Recommendation([FromRoute] Guid id)
+        => Send(await service.Recommendations(id));
+    
+    [HttpGet]
+    [Authorize("User")]
+    [Route("[action]")]
+    [ProducesResponseType(typeof(TopGameDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Top10()
+        => Send(await service.Top10());
+    
+    [HttpGet]
+    [Authorize("User")]
     [ProducesResponseType(typeof(GameDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult Get()

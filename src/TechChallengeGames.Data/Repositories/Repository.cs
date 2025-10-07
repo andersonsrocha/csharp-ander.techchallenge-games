@@ -11,6 +11,9 @@ public abstract class Repository<TEntity>(TechChallengeGamesContext usersContext
     public TEntity? Find(Guid id)
         => _dbSet.AsNoTracking().SingleOrDefault(x => x.Id == id);
 
+    public IEnumerable<TEntity> Find(IEnumerable<Guid> ids)
+        => _dbSet.AsNoTracking().Where(x => ids.Contains(x.Id)).ToList();
+
     public IEnumerable<TEntity> Find()
         => _dbSet.AsNoTracking().ToList();
 
