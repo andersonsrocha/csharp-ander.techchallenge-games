@@ -33,7 +33,7 @@ stages:
             inputs:
               command: "build"
               projects: "**/*.csproj"
-              arguments: "--no-restore --configuration $(buildConfiguration)"
+              arguments: "--no-restore --configuration $(buildConfiguration) --build-arg NEW_RELIC_LICENSE_KEY=$(nrKey)"
 
           - task: DotNetCoreCLI@2
             displayName: "Executar testes unitários"
