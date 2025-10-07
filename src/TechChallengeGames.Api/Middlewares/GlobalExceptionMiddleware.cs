@@ -14,13 +14,14 @@ public class GlobalExceptionMiddleware(RequestDelegate next)
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An unexpected fault happened, please contact yor Administrator with the error id.");
+            var correlationId = context.Items["CorrelationId"]?.ToString() ?? Guid.NewGuid().ToString();
+            var errorResponse = $"An unexpected fault happened, please contact yor Administrator with the error id: {correlationId}.";
+            
+            logger.LogError(ex, "An unexpected fault happened, please contact yor Administrator with the error id: {correlationId}.", correlationId);
             
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
             
-            var correlationId = context.Items["CorrelationId"]?.ToString() ?? Guid.NewGuid().ToString();
-            var errorResponse = $"An unexpected fault happened, please contact yor Administrator with the error id: {correlationId}.";
             var problem = new ProblemDetails
             {
                 Title = "An unexpected fault happened",

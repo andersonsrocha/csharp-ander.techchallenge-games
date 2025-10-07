@@ -40,13 +40,14 @@ public class BaseController(ILogger<BaseController> logger) : ControllerBase
     [NonAction]
     private ObjectResult TreatError(Exception? error)
     {
+        var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
         switch (error)
         {
             case not null:
-                logger.LogError("An unexpected fault happened, please contact yor Administrator with the error id: {ErrorMessage}", error.Message);
+                logger.LogError("[CorrelationId: {CorrelationId}] An unexpected fault happened, please contact your Administrator with the error: {ErrorMessage}", correlationId, error.Message);
                 return Problem(detail: error.Message, statusCode: (int)HttpStatusCode.BadRequest);
             default:
-                logger.LogError("An unexpected fault happened, please contact yor Administrator with the error id.");
+                logger.LogError("[CorrelationId: {CorrelationId}] An unexpected fault happened, please contact your Administrator with the error id.", correlationId);
                 return Problem(statusCode: (int)HttpStatusCode.InternalServerError);
         }
     }

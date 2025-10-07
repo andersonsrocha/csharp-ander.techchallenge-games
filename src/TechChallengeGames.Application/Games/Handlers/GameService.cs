@@ -16,10 +16,12 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
 {
     public async Task<IEnumerable<GameDto>> Recommendations(Guid userId)
     {
+        logger.LogInformation("Generating game recommendations for user {UserId}", userId);
         var user = userId.ToString();
         var indexName = nameof(PaymentLog).ToLower();
         
         // 1. Buscar os gameIds comprados pelo usuário atual
+        logger.LogInformation("Fetching purchased games for user {UserId}", userId);
         var purchasedGameIds = (await GetPurchasedGameIds(user, indexName)).ToList();
         if (purchasedGameIds.Count == 0)
         {
@@ -28,6 +30,7 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
         }
         
         // 2. Buscar jogos recomendados baseados em usuários similares
+        logger.LogInformation("Fetching recommended games for user {UserId}", userId);
         var recommendedGameIds = (await GetRecommendedGameIds(user, indexName, purchasedGameIds)).ToList();
         if (recommendedGameIds.Count == 0)
         {
@@ -36,6 +39,7 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
         }
         
         // 3. Buscar os detalhes dos jogos recomendados no repositório
+        logger.LogInformation("Fetching details for recommended games for user {UserId}", userId);
         var games = repository.Find(recommendedGameIds).ToList();
         
         return games.Select(game => game.MapToDto());
@@ -43,9 +47,11 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
     
     public async Task<IEnumerable<TopGameDto>> Top10()
     {
+        logger.LogInformation("Fetching Top 10 most purchased games");
         var indexName = nameof(PaymentLog).ToLower();
         
         // Buscar agregação dos gameIds mais comprados
+        logger.LogInformation("Fetching Top 10 aggregation from Elasticsearch");
         var response = await elastic.Search<PaymentLog>(s => s
             .Indices(indexName)
             .Size(0)
@@ -57,6 +63,7 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
         
         var topGameIds = new List<(Guid Id, long Count)>();
         
+        logger.LogInformation("Processing Top 10 aggregation results");
         var topGamesAgg = response.Aggregations!.GetStringTerms("top_games");
         if (topGamesAgg?.Buckets is not null)
         {
@@ -73,9 +80,11 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
         }
         
         // Buscar os detalhes dos jogos no repositório
+        logger.LogInformation("Fetching game details for Top 10 games");
         var games = repository.Find(topGameIds.Select(g => g.Id)).ToList();
         
         // Ordenar os jogos conforme a ordem do ranking (mais comprados primeiro)
+        logger.LogInformation("Ordering Top 10 games");
         var orderedGames = topGameIds
             .Select(tg => (games.FirstOrDefault(g => g.Id == tg.Id), tg.Count))
             .Where(game => game.Item1 is not null)
@@ -98,9 +107,11 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
 
     public async Task<Result<Guid>> CreateAsync(CreateGameRequest request)
     {
+        logger.LogInformation("Creating a new game with name: {GameName}", request.Name);
         var game = (Game)request;
         repository.Add(game);
         await unitOfWork.CommitAsync(CancellationToken.None);
+        logger.LogInformation("Game {GameName} created. Saving game in elasticsearch", game.Name);
         await elastic.AddOrUpdate(new GameLog(game.Id, game.Name, game.Description, game.Category), nameof(GameLog).ToLower());
 
         return Result.Success(game.Id);
@@ -108,13 +119,16 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
 
     public async Task<Result> UpdateAsync(UpdateGameRequest request)
     {
+        logger.LogInformation("Updating game with ID: {GameId}", request.Id);
         var game = repository.Find(request.Id);
         if (game is null)
             return Result.Error(new Exception("Game not found."));
 
+        logger.LogInformation("Game found. Updating details.");
         game.Update(request.Name, request.Description, request.ImageUrl, request.Category, request.ReleaseDate, request.Price);
         repository.Update(game);
         await unitOfWork.CommitAsync(CancellationToken.None);
+        logger.LogInformation("Game {GameName} updated. Updating game in elasticsearch", game.Name);
         await elastic.AddOrUpdate(new GameLog(game.Id, game.Name, game.Description, game.Category), nameof(GameLog).ToLower());
 
         return Result.Success();
@@ -122,10 +136,12 @@ public class GameService(IGameRepository repository, IUnitOfWork unitOfWork, IEl
 
     public async Task<Result> DeleteAsync(Guid id)
     {
+        logger.LogInformation("Deleting game with ID: {GameId}", id);
         var game = repository.Find(id);
         if (game is null)
             return Result.Error(new Exception("Game not found."));
-
+        
+        logger.LogInformation("Game found. Marking as deleted.");
         if (!game.Active)
             return Result.Error(new Exception("Game has been deleted."));
 
