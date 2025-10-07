@@ -51,7 +51,7 @@ stages:
     dependsOn: Build
     condition: succeeded()
     jobs:
-      - job: Construir e publicar imagem Docker
+      - job: Build
         steps:
           - task: Docker@2
             displayName: "Construir imagem Docker"
@@ -117,7 +117,7 @@ stages:
     dependsOn: Deploy
     condition: succeeded()
     jobs:
-      - job: Implantar Infraestrutura New Relic
+      - job: NewRelic
         steps:
           - script: |
               docker run \
