@@ -33,7 +33,7 @@ stages:
             inputs:
               command: "build"
               projects: "**/*.csproj"
-              arguments: "--no-restore --configuration $(buildConfiguration) --build-arg NEW_RELIC_LICENSE_KEY=$(nrKey)"
+              arguments: "--no-restore --configuration $(buildConfiguration)"
 
           - task: DotNetCoreCLI@2
             displayName: "Executar testes unitários"
@@ -109,6 +109,7 @@ stages:
                       Credentials__Password="$(adminPassword)"
                       ElasticSettings__ApiKey="$(elasticApiKey)"
                       ElasticSettings__CloudId="$(elasticCloudId)"
+                      NEW_RELIC_LICENSE_KEY="$(nrKey)"
                   displayName: "Construir e Rodar o Contêiner Docker com a Aplicação .NET"
 
   - stage: Infraestructure
