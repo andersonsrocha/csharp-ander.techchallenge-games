@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: games-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: games
+  template:
+    metadata:
+      labels:
+        app: games
+    spec:
+      containers:
+        - name: games-container
+          image: acr96.azurecr.io/games:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          env:
+            - name: jwtIssuer
+              valueFrom:
+                configMapKeyRef:
+                  name: games-config
+                  key: JWT_ISSUER
+            - name: jwtAudience
+              valueFrom:
+                configMapKeyRef:
+                  name: games-config
+                  key: JWT_AUDIENCE
+            - name: gameUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: games-config
+                  key: GAME_URL
+            - name: userUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: games-config
+                  key: USER_URL
+            - name: elasticCloudId
+              valueFrom:
+                configMapKeyRef:
+                  name: games-config
+                  key: ELASTIC_CLOUD_ID
+            - name: environment
+              valueFrom:
+                configMapKeyRef:
+                  name: games-config
+                  key: ENVIRONMENT
+            - name: environment
+              valueFrom:
+                secretKeyRef:
+                  name: games-secrets
+                  key: ENVIRONMENT
+      imagePullSecrets:
+        - name: games-secret

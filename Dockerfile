@@ -1,10 +1,8 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
-# Copiar o arquivo da solução
+# Copiar arquivos de projeto para melhor cache do Docker
 COPY TechChallengeGames.sln ./
-
-# Copy project files
 COPY src/TechChallengeGames.Api/TechChallengeGames.Api.csproj src/TechChallengeGames.Api/
 COPY src/TechChallengeGames.Application/TechChallengeGames.Application.csproj src/TechChallengeGames.Application/
 COPY src/TechChallengeGames.Data/TechChallengeGames.Data.csproj src/TechChallengeGames.Data/
@@ -20,16 +18,13 @@ RUN dotnet restore
 COPY src/ src/
 COPY tests/ tests/
 
-# Construir o projeto
-RUN dotnet build -c Release --no-restore
-
 # Publicar o projeto
 RUN dotnet publish src/TechChallengeGames.Api/TechChallengeGames.Api.csproj -c Release -o /app/publish --no-restore
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Runtime stage - usando Alpine para imagem mais leve
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 
-# Install the agent
+# Instalar New Relic
 RUN apt-get update && apt-get install -y wget ca-certificates gnupg \
 && echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list \
 && wget https://download.newrelic.com/548C16BF.gpg \
@@ -40,10 +35,10 @@ RUN apt-get update && apt-get install -y wget ca-certificates gnupg \
 
 # Enable the agent
 ENV CORECLR_ENABLE_PROFILING=1 \
-CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
-CORECLR_NEWRELIC_HOME=/usr/local/newrelic-dotnet-agent \
-CORECLR_PROFILER_PATH=/usr/local/newrelic-dotnet-agent/libNewRelicProfiler.so \
-NEW_RELIC_APP_NAME="techchallenge-games-newrelic"
+    CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
+    CORECLR_NEWRELIC_HOME=/usr/local/newrelic-dotnet-agent \
+    CORECLR_PROFILER_PATH=/usr/local/newrelic-dotnet-agent/libNewRelicProfiler.so \
+    NEW_RELIC_APP_NAME="techchallenge-games-newrelic"
 
 WORKDIR /app
 

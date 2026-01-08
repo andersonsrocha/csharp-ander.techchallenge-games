@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: games-config
+data:
+  JWT_ISSUER: https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/
+  JWT_AUDIENCE: https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/
+  GAME_URL: https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/
+  USER_URL: https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/
+  ELASTIC_CLOUD_ID: $(elasticCloudId)
+  ENVIRONMENT: Production
