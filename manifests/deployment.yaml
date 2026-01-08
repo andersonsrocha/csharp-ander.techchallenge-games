@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: games-container
-          image: acr96.azurecr.io/games:$(tag)
+          image: acr96.azurecr.io/games:latest
           ports:
             - containerPort: 8080
           resources:
@@ -86,3 +86,5 @@ spec:
                 secretKeyRef:
                   name: games-secrets
                   key: newrelickey
+      imagePullSecrets:
+        - name: credentials
