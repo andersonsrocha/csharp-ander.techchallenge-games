@@ -25,13 +25,10 @@ RUN dotnet publish src/TechChallengeGames.Api/TechChallengeGames.Api.csproj -c R
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 
 # Instalar New Relic
-RUN apt-get update && apt-get install -y wget ca-certificates gnupg \
-&& echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list \
-&& wget https://download.newrelic.com/548C16BF.gpg \
-&& apt-key add 548C16BF.gpg \
-&& apt-get update \
-&& apt-get install -y 'newrelic-dotnet-agent' \
-&& rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add --no-cache wget tar \
+    && wget https://download.newrelic.com/dot_net_agent/latest_release/newrelic-dotnet-agent_amd64.tar.gz -r \
+    && tar -xzf download.newrelic.com/dot_net_agent/latest_release/newrelic-dotnet-agent_amd64.tar.gz -C /usr/local \ 
+    && rm -rf download.newrelic.com
 
 # Enable the agent
 ENV CORECLR_ENABLE_PROFILING=1 \
@@ -42,8 +39,8 @@ ENV CORECLR_ENABLE_PROFILING=1 \
 
 WORKDIR /app
 
-# Criar non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Criar non-root user (Alpine Linux)
+RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 # Copiar os arquivos publicados
 COPY --from=build /app/publish .
