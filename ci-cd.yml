@@ -102,18 +102,6 @@ stages:
                     containerAppName: "$(appName)"
                     resourceGroup: "$(resourceGroup)"
                     targetPort: "8080"
-                    containerAppEnvironment: |
-                      ConnectionStrings__TechDb="$(connectionString)"
-                      Jwt__Issuer="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
-                      Jwt__Audience="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
-                      Jwt__Key="$(jwtKey)"
-                      Microservices__GameUrl="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
-                      Microservices__UserUrl="https://$(appName).delightfulbush-724e4803.eastus.azurecontainerapps.io/"
-                      Credentials__Email="$(adminEmail)"
-                      Credentials__Password="$(adminPassword)"
-                      ElasticSettings__ApiKey="$(elasticApiKey)"
-                      ElasticSettings__CloudId="$(elasticCloudId)"
-                      NEW_RELIC_LICENSE_KEY="$(nrKey)"
                   displayName: "Construir e Rodar o Contêiner Docker com a Aplicação .NET"
 
   - stage: Infraestructure

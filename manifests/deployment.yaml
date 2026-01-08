@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: games-container
-          image: acr96.azurecr.io/games:latest
+          image: acr96.azurecr.io/games:$(tag)
           ports:
             - containerPort: 8080
           resources:
@@ -25,40 +25,64 @@ spec:
               memory: "256Mi"
               cpu: "500m"
           env:
-            - name: jwtIssuer
+            - name: Jwt__Issuer
               valueFrom:
                 configMapKeyRef:
                   name: games-config
                   key: JWT_ISSUER
-            - name: jwtAudience
+            - name: Jwt__Audience
               valueFrom:
                 configMapKeyRef:
                   name: games-config
                   key: JWT_AUDIENCE
-            - name: gameUrl
+            - name: Microservices__GameUrl
               valueFrom:
                 configMapKeyRef:
                   name: games-config
                   key: GAME_URL
-            - name: userUrl
+            - name: Microservices__UserUrl
               valueFrom:
                 configMapKeyRef:
                   name: games-config
                   key: USER_URL
-            - name: elasticCloudId
-              valueFrom:
-                configMapKeyRef:
-                  name: games-config
-                  key: ELASTIC_CLOUD_ID
-            - name: environment
+            - name: ENVIRONMENT
               valueFrom:
                 configMapKeyRef:
                   name: games-config
                   key: ENVIRONMENT
-            - name: environment
+
+            - name: ConnectionStrings__TechDb
               valueFrom:
                 secretKeyRef:
                   name: games-secrets
-                  key: ENVIRONMENT
-      imagePullSecrets:
-        - name: games-secret
+                  key: connectionstring
+            - name: Jwt__Key
+              valueFrom:
+                secretKeyRef:
+                  name: games-secrets
+                  key: jwtkey
+            - name: Credentials__Email
+              valueFrom:
+                secretKeyRef:
+                  name: games-secrets
+                  key: adminemail
+            - name: Credentials__Password
+              valueFrom:
+                secretKeyRef:
+                  name: games-secrets
+                  key: adminpassword
+            - name: ElasticSettings__ApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: games-secrets
+                  key: elasticapikey
+            - name: ElasticSettings__CloudId
+              valueFrom:
+                secretKeyRef:
+                  name: games-secrets
+                  key: elasticcloudid
+            - name: NEW_RELIC_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: games-secrets
+                  key: newrelickey
