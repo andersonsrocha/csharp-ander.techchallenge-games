@@ -82,27 +82,71 @@ stages:
                 $(tag)
                 latest
 
+  # - stage: Deploy
+  #   displayName: "Implantar aplicação"
+  #   dependsOn: Docker
+  #   condition: succeeded()
+  #   jobs:
+  #     - deployment: Deploy
+  #       displayName: "Implantar em ambiente de produção"
+  #       environment: "Production"
+  #       strategy:
+  #         runOnce:
+  #           deploy:
+  #             steps:
+  #               - task: AzureContainerApps@1
+  #                 inputs:
+  #                   azureSubscription: "Assinatura para estudantes(07de936b-e0c8-47b8-b15f-3d778712ecb6)"
+  #                   location: "$(location)"
+  #                   imageToDeploy: "$(acrLoginServer)/$(imageName):$(tag)"
+  #                   containerAppName: "$(appName)"
+  #                   resourceGroup: "$(resourceGroup)"
+  #                   targetPort: "8080"
+  #                 displayName: "Construir e Rodar o Contêiner Docker com a Aplicação .NET"
+
   - stage: Deploy
-    displayName: "Implantar aplicação"
+    displayName: Setup yamls do kubernetes
     dependsOn: Docker
     condition: succeeded()
     jobs:
-      - deployment: Deploy
-        displayName: "Implantar em ambiente de produção"
-        environment: "Production"
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: AzureContainerApps@1
-                  inputs:
-                    azureSubscription: "Assinatura para estudantes(07de936b-e0c8-47b8-b15f-3d778712ecb6)"
-                    location: "$(location)"
-                    imageToDeploy: "$(acrLoginServer)/$(imageName):$(tag)"
-                    containerAppName: "$(appName)"
-                    resourceGroup: "$(resourceGroup)"
-                    targetPort: "8080"
-                  displayName: "Construir e Rodar o Contêiner Docker com a Aplicação .NET"
+      - job: Apply
+        steps:
+          - task: Kubernetes@1
+            inputs:
+              connectionType: "Kubernetes Service Connection"
+              kubernetesServiceEndpoint: "K8S"
+              command: "apply"
+              useConfigurationFile: true
+              configuration: "$(Build.SourcesDirectory)/manifests/config-map.yaml"
+              secretType: "dockerRegistry"
+              containerRegistryType: "Azure Container Registry"
+          - task: Kubernetes@1
+            inputs:
+              connectionType: "Kubernetes Service Connection"
+              kubernetesServiceEndpoint: "K8S"
+              command: "apply"
+              useConfigurationFile: true
+              configuration: "$(Build.SourcesDirectory)/manifests/deployment.yaml"
+              secretType: "dockerRegistry"
+              containerRegistryType: "Azure Container Registry"
+          - task: Kubernetes@1
+            inputs:
+              connectionType: "Kubernetes Service Connection"
+              kubernetesServiceEndpoint: "K8S"
+              command: "apply"
+              useConfigurationFile: true
+              configuration: "$(Build.SourcesDirectory)/manifests/service.yaml"
+              secretType: "dockerRegistry"
+              containerRegistryType: "Azure Container Registry"
+          - task: Kubernetes@1
+            inputs:
+              connectionType: "Kubernetes Service Connection"
+              kubernetesServiceEndpoint: "K8S"
+              command: "apply"
+              useConfigurationFile: true
+              configuration: "$(Build.SourcesDirectory)/manifests/hpa.yaml"
+              secretType: "dockerRegistry"
+              containerRegistryType: "Azure Container Registry"
 
   - stage: Infraestructure
     displayName: "Implantar Infraestrutura New Relic"
