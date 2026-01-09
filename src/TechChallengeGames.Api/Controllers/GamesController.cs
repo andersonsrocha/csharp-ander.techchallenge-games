@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TechChallengeGames.Application.Games.Commands;
 using TechChallengeGames.Application.Games.Interfaces;
+using TechChallengeGames.Application.RabbitMQ.Commands;
+using TechChallengeGames.Application.RabbitMQ.Interfaces;
 using TechChallengeGames.Domain.Dto;
 
 namespace TechChallengeGames.Api.Controllers;
 
 [Route("api/[controller]")]
-public class GamesController(IGameService service, ILogger<GamesController> logger) : BaseController(logger)
+public class GamesController(IGameService service, IRabbitMqService rabbitMqService, ILogger<GamesController> logger) : BaseController(logger)
 {
     [HttpGet]
     [Authorize("User")]
@@ -35,6 +37,15 @@ public class GamesController(IGameService service, ILogger<GamesController> logg
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Top10()
         => Send(await service.Top10());
+    
+    [HttpPost]
+    [Authorize("User")]
+    [Route("[action]")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Purchase([FromBody] PurchaseGameRequest request)
+        => await Send(rabbitMqService.SendPurchaseAsync(request));
     
     [HttpGet]
     [Authorize("User")]
